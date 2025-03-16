@@ -1,31 +1,31 @@
-# Usamos una imagen oficial de PHP
+# Usa una imagen base de PHP
 FROM php:8.1-fpm
 
-# Instalamos dependencias necesarias para Laravel
-RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev git zip unzip && \
-    docker-php-ext-configure gd --with-freetype --with-jpeg && \
-    docker-php-ext-install gd pdo pdo_mysql
+# Instalamos dependencias necesarias
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    zip \
+    git \
+    libzip-dev \
+    && docker-php-ext-configure zip \
+    && docker-php-ext-install pdo pdo_mysql zip exif pcntl
 
 # Instalamos Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Configuramos el directorio de trabajo
-WORKDIR /var/www
+# Copiamos el código de la aplicación
+COPY . /var/www/html
 
-# Copiamos los archivos de la aplicación en el contenedor
-COPY . .
+# Establecemos el directorio de trabajo
+WORKDIR /var/www/html
 
 # Instalamos las dependencias de Composer
 RUN composer install --no-dev --optimize-autoloader
 
-# Copiamos el archivo .env
-COPY .env.example .env
-
-# Generamos la clave de la aplicación
-RUN php artisan key:generate
-
-# Expone el puerto 9000
+# Expone el puerto
 EXPOSE 9000
 
-# Configuramos el comando de inicio
+# Comando para ejecutar PHP-FPM
 CMD ["php-fpm"]
