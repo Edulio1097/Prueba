@@ -25,8 +25,8 @@ WORKDIR /var/www/html
 # Instalamos las dependencias de Composer
 RUN composer install --no-dev --optimize-autoloader
 
-# Expone el puerto
-EXPOSE 9000
+# Exponemos el puerto 8000 para Laravel
+EXPOSE 8000
 
-# Comando para ejecutar PHP-FPM
-CMD ["php-fpm"]
+# Comando para ejecutar php artisan serve
+CMD php artisan serve --host=0.0.0.0 --port=8000
