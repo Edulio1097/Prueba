@@ -1,5 +1,5 @@
 # Usa una imagen base de PHP
-FROM php:8.1-fpm
+FROM php:8.2-fpm  # Cambiar a PHP 8.2 para resolver los problemas de compatibilidad con otras dependencias
 
 # Instalamos dependencias necesarias
 RUN apt-get update && apt-get install -y \
@@ -9,8 +9,9 @@ RUN apt-get update && apt-get install -y \
     zip \
     git \
     libzip-dev \
+    libicu-dev \  # Dependencia necesaria para la extensión intl
     && docker-php-ext-configure zip \
-    && docker-php-ext-install pdo pdo_mysql zip exif pcntl
+    && docker-php-ext-install pdo pdo_mysql zip exif pcntl intl  # Habilitamos intl aquí
 
 # Instalamos Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
